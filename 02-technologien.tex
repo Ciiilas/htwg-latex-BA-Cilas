@@ -1,0 +1,121 @@
+\chapter{Grundlagen und Technologien}
+
+In diesem Kapitel werden die Grundlagen und die verwendeten Technologien erläutert, die für die Konzeption und Umsetzung der Kompiliereranbindung für CodeTask von Bedeutung sind. Zunächst wird das Konzept von Online-Judge-Systemen im Allgemeinen betrachtet, bevor auf die spezifischen Isolationsmechanismen und Kommunikationsprotokolle eingegangen wird.
+
+\section{Online-Judge-Systeme}
+Ein Online-Judge-System ist eine Plattform, welche Programmieraufgaben zur Verfügung stellt die von Nutzern gelöst werden können. Dazu wird der Code gegen vordefinierte Testfälle geprüft.
+Durch solch ein System können sich Studenten, Schüler aber auch Berufstätige in unterschiedlichen Programmiersprachen zu allen möchtlichen Themen fortbilden ohne sämtliche Systeme selbst aufsetzen zu müssen.
+Dazu sorgt solch ein System für eine einheitliche, objektive Bewertung - gleiche Eingabe, gleiche Ausgabe, es gibt keine Sympathie, die bevorzugen oder benachteiligen kann. Zusätzlich bekommt man ein sofortiges Ergebnis. Ein Computer kann die Aufgaben schneller bewerten als jeder Mensch.
+Ein Online-Judge kann in unterschiedlichsten Möglichenkeiten genutzt werden. Es kann regulär zum lernen/fortbilden genutzt werden, in Wettbewerben in denen man gemessen werden kann oder als Portfolio zum offenlegen aktueller Fähigkeiten.
+
+\subsection{Architektur eines Online-Judges}
+Ein jedes Online-Judge-System besteht aus einer handvoll Bausteinen die für einen reibungslosen Betrieb von nöten sind.
+	\subsubsection{User-Interface}
+	In irgendeiner Form muss der Nutzer seinen Code abgeben können. Hier kommt das Frontend in der Regels als eine Website ins Spiel. In einem Textfeld wird der Code eingegeben und zum prüfen an das Backend geschickt.
+	\subsubsection{Aufgaben-Management}
+	Damit das System weiß, welche Aufgaben und Nutzer es gibt, wird eine Datenbank benötigt. In dieser werden sämtliche notwendigen Informationen permanent abgespeichert. Darunter fallen auch Ergebnisse von Nutzern oder Statistiken.
+	Damit die Aufgaben im Frontend angezeigt werden können, müssen die Informationen sowohl erstmals in der Datenbank gespeichert, als auch kontinuirlich gelesen werden. Dafür sorgt ein Management Service. Dieser Service verbindet das Frontend mit der Datenbank und ermöglicht die notwenige Kommunikation.
+	\subsubsection{Judging-Engine / Kompiler}
+	Jedes dieser Systeme muss den Programmcode des Nutzers ausführen um zu verifizieren, dass dieser das korrekte Ergebnis liefert. Das passiert mit einer Judging-Engine. Diese nimmt die Anfragen mit dem Code entgegen und führt den Code aus. Das ganze passiert dabei in der Regel asyncron, damit das System auch bei vielen Anfragen nicht zusammenbricht. Sobald die Judging-Engine den Code ausgeführt hat und ein Ergebnis erstellt hat, wird dieses zurück geschickt.
+	\subsubsection{Sandbox}
+	Der kritischste Teil eines solchen Systems liegt in der sogenannten dynamischen Code-Ausführung. Dabei ist gemeint, das in einem Programmcode ein Kompiler eingebaut ist, welcher während der Laufzeit des Programmcodes selbst neuen, zur Laufzeig erstellten, Programmcode erhält, kompiliert und ausführt.
+	Dynamische Code-Ausführung ist dabei sehr häufig ein großes Risiko, da der Code vollen Zugriff auf das System hat, in dem er läuft. Das kann bedeuten, das der Code gefährliche Befehle wie zum Beispiel sys.exit() ausführen kann und damit das gesamte Programm beenden oder sogar Dateien auslesen kann.
+	Um diesem Problem zu entweichen kann man so ein System in einer Sandbox aufbauen. Dabei ist eine Sandbox ein abgesichertes System das nur eingeschrängt arbeiten kann. Bei richtiger Anwendung einer Sandbox können so sämtliche Sicherheitslücken umgangen werden und dynamische Code-Ausführung wäre sicher.
+
+\subsection{Der Prozessablauf}
+	\subsubsection{Einreichung}
+	Die Reise startet im Frontend. Der Nutzer wählt eine Aufgabe aus, die er lösen möchte. Darauf hin wird diese Aufgabe mit Tests und eventuellem vorgegebenen Code aus der Datenbank geladen und für den Nutzer angezeigt. In den gängigen Systemen, auf welche ich im Absatz [] genauer eingehe, wird der Code in ein Text-Widget geschrieben (genaueres zu solchen Text-Widgets im Absatz []). %todo: Absatzt einfügen
+	Sobald der Nutzer fertig programmiert hat, kann er seine Lösung abschicken. Durch das Abschicken werden alle Relevanten Daten an das Backend geschickt. Im Backend werden weitere benötigte Daten aus der Datenbank geladen und zusammen an die Judging-Engine gegeben.
+	
+	\subsubsection{Validierung}
+	Ist der Code überhaupt vollständig beziehungsweise Syntaktisch korrekt? Das wird je nach Programmiersprache unterschiedlich Entschieden. In Sprachen wie C, Java oder Scala ist hier ein vorläufiges überprüfen des Codes hilfreich. Durch Untersuchen des Codes auf bestimmte Schlüsselwörter, kann so frühzeitig erkannt werden ob der Code bösartig ist.
+	
+	\subsubsection{Kompilierung}
+	Ist die Validierung erfolgreich, kann der Code kompiliert werden. Dafür kann ein vorhandener Kompiler genutzt oder eigener geschreiben werden. Damit der Kompiler den Code aber in  Maschienensprache übersetzen kann müssen von dem Kompiler noch einige Prüfungen stattfinden. Darunter prüfen ob die Vokabeln korrekt sind, also ob die Schlüsselwörter wie val oder if richtig geschrieben wurden. Daraufhin wird die Syntax geprüft, also ob der Satzbau korrekt ist, zum Beispiel ob eine Klammer oder ein Semikolon vergessen wurde. Und zum Schluss findet die semantische Prüfung statt, hier wird überprüft, ob der Code Sinn ergibt. Einen Text durch eine Zahl zu teilen wäre dabei ein Szenario bei dem diese Prüfung anschlagen würde. %todo: Quelle ANTLR einbinden.
+	Ist bis hierhin alles fehlerfrei, übersetzt der Kompiler den Code in eine ausführbare Maschinensprache.
+	
+	\subsubsection{Ausführung}
+	Der Code ist übersetzt und kann ausgeführt werden. Der Code liefert am Ende ein beliebiges Ergebnis. Dieses muss jedoch überprüft werden, damit beurteilt werden kann, das der Code auch die gestellte Aufgabe löst.
+
+	\subsubsection{Bewertung}
+	Um den Code bewerten zu können brauche wir Testfälle, die mit dem Code zusammen kompiliert wurden. Diese vergleichen das erzeugte Ergebniss des Codes mit der erwarteten Lösung.
+	
+	\subsubsection{Rückmeldung}
+	Stimmt das Ergebnis mit dem Test überein, so wird dem Nutzer dies Mitgeteilt. Ist das Ergebniss falsch oder der Code zu komplex, sodass das Programm zu lange ausgefürht werden muss wird auch das dem Nutzer beigebracht.
+	
+	
+	
+	Für Scala bietet sich direkt der Scala-Kompilierer Dotty \cite{DottyRepo} an.
+	
+\subsection{Vergleich bestehender Systeme}
+	\subsubsection{HackerRank und LeetCode}
+	LeetCode \cite{leetcode} und HackerRank \cite{hackerrank} sind aktuell die größen Online-Judge-Systeme.
+	Beide Unternehmen bieten auf Ihren Websiten mehrere hundert unterschiedliche Programmieraufgaben in unterschiedlichen Programmiersprachen an. Ihr Ziel ist es Studenten, Auszubildende, Quereinsteiger aber auch Angestelle Entwickler weiter zu bilden. LeetCode's Aufgaben sind dabei sehr stark an die gestellten Aufgaben von riesen Tech Firmen wie Google, Meta, Amazon und co. angelehnt. Damit ist LeetCode ideal geeignet um sich auf Codeinterviews vorzubereiten. LeetCode fokusiert sich dabei stark auf algorithmische Aufgaben, wie Data Structures oder Algorithms. HackereRank auf der anderen Seite wird zwar genau so für Interviews direkt genutzt, bietet aber häufiger Coding Challenges und Wettbewerbe an in denen sich die Nutzer untereinander vergleichen, messen und motivieren können. Dazu ist das Angebot an Themen auch breiter. Datenbanken, Ki, Sicherheit und Linux und weitere Aufgabenbereiche werden hier angeboten.
+	Beide Unternehmen können tausende gleichzeitige Nutzer verarbeiten. Das erreichen sie durch Asynchrone Verarbeitung von Anfragen, bei denen eine Anfrage erstmal in eine Warteschlange abgelegt wird. Der Nutzer bekommt sofort eine Benachrichtigung, das die Anfrage im System eingegangen ist, die tatsächliche Verarbeitung der Daten passiert aber erst danach. Damit die Warteschlange schnell abgearbeitet werden kann, auch unter Last, kommt Horizontales Scaling in Einsatz. Dabei können auf Abruf weitere Dienste hochgefahren werden, welche dabei helfen, die Anfragen verarbeiten. Die Anfragen werden zudem in Isolierte Container verlagert. Große Systeme wie das von LeetCode oder HackerRank stellen dafür tausende wartende Container bereit, die darauf warten den Code des Nutzers auszufüren. Auf Container gehe ich dabei im Detail in Abschnitt \ref{sec:container} ein. Als letzte Skalierung werden Lastverteiler (Load Balancer) genutzt. LeetCode und HackerRank haben auf der ganzen Welt Server verteilt. Anfragen aus einem bestimmten Land werden dabei automatisch an den nächstgelegenen Server gebenen, sodass Latenzen möglichst klein gehalten werden können. Load Balancer merken allerdings, wenn der Server überlastet ist und leiten die Anfrage in so einem Fall automatisch an einen Server unter weniger Last weiter.
+	
+	\subsubsection{Sphere Online Judge (SPOJ)}
+	SPOJ \cite{spoj}, aus den frühen 2000er Jahren, ist eines der ersten Judging Systemen. SPOJ hat es jedem ermöglicht eigene Aufgaben zu erstellen und online hochzuladen. So konnte Code in über 40 Programmiersprachen, darunter auch exoten wie Intercal oder Brainfuck, getestet werden. Allerdings musste für jede Sprache ein Kompiler oder Interpreter eingebaut sein, was diese extreme Vielfalt extrem wartungsintensiv macht. SPOJ hat dami aber den Grundstein für das Grundprinzip Code $\rightarrow$ Test $\rightarrow$ Ergebnis gelegt, welches 20 Jahre später noch genau so angewandt wird. Im Vergleich zu LeetCode liegt bei SPOJ der fokus auf reiner Informatik. Hier geht es darum, arithmetische Probleme zu lösen und weniger daruaf sich für das nächste Code-Interview vorzubereiten. SPOJ setzt auf ein sehr strikes Bewertungssystem, das auch auf Faktoren wie Zeit und Speicherlimits achtet um die Effiziens des Codes zu prüfen.
+	
+	\subsubsection{CodeTask}
+	In unserem Hochschul spezifischen Projekt CodeTask, um das es in dieser Arbeit geht, lieft der Fokus vorerst auf der Lehre der Studenten in der Programmiersprache Scala. CodeTask soll sowohl in Vorlesungen als auch in Prüfungen von den Dozenten und Studenten genutzt werden. Dafür können Lehraufgaben direkt vom Dozent oder Tutoren selbst erstellt und bereitgestellt werden. Das Ziel ist nicht, das der Student ein Wahr oder Falsch bekommt, sondern klare Antwort die für einen idealen Lernfortschritt sorgt.
+	Aktuell ist CodeTask noch in der Entwicklung und primär auf die Nutzung innerhalb des Hochschulnetzwerks der HTWG-Konstanz begrenzt. Damit Datenschutz und viel wichtiger, die Kontrolle über studentische Daten garantiert werden können läuft die Applikation aktuell auf Hochschul eigenen Servern und nicht wie bei LeetCode auf riesigen externen Cloud-Infrastrukturen.
+	Ein Nachteil liegt dabei darin, das das System effizient auf Hochschul-Servern funktionieren muss. Dafür ist es allerdings einfacher auf Services die LDAP (Hochschul-Login) und weitere Tools der Hochschule zuzugreifen.
+	CodeTask ist eine Eigenentwicklung der HWTG-Konstanz, welche zum aktuell Stand vorwiegend auf Scala-Übungen ausgelegt ist. Die im Rahmen meiner Bachelorarbeit entwickelte Kompileranbindung bieldet dabei die entscheidende technische Grundlage, um die Programmiersprache Scala in das System zu integrieren und gleichzeitig eine universelle Schnittstelle für die zukünftige Einbindung weiterer Programmiersprachen zu ermöglichen.
+
+
+	\subsubsection{Vergleichstabelle und Analyse}
+	Zur Verdeutlichung der Unterschiede zwischen den vorgestellten Systemen und der Einordnung von CodeTask dient die folgende Tabelle \ref{tab:vergleich_systeme}. Diese stellt die kommerziellen Plattformen,
+	historische Pioniere und die spezialisierte Hochschullösung anhand ausgewählter Kriterien gegenüber.
+	   \begin{table}[htbp]
+		\centering
+		\caption{Vergleich der Online-Judge-Plattformen}
+		\label{tab:vergleich_systeme}
+			\begin{tabular}{p{3cm} p{3.5cm} p{3.5cm} p{3.5cm}}
+				\textbf{Kriterium} & \textbf{HackerRank / LeetCode} & \textbf{SPOJ} & \textbf{CodeTask} \\
+				\hline
+				\textbf{Zielgruppe} & Globales Recruiting / Wettbewerbe & Competitive Programming & Hochschullehre (HTWG) \\
+				\textbf{Infrastruktur} & Cloud-basiert (global) & Server-basiert (zentral) & Lokal (Hochschul-Server) \\
+				\textbf{Sprachvielfalt} & Sehr hoch ($>30$) & Extrem hoch ($>40$) & Fokus auf Lehre (Scala) \\
+				\textbf{Isolation} & Cloud-Container & Klassische Jails & \textbf{Docker-Container / Kubernetis Cluster} \\
+				\textbf{Open Source} & Nein (Kommerziell) & Nein & Ja (Eigenentwicklung) \\
+			\end{tabular}
+		\end{table}	
+		
+	Wie in Tabelle \ref{tab:vergleich_systeme} zu erkennen ist, belegt CodeTask eine etwas andere Rolle. Während HackerRank und LeetCode stark auf Skalierbarkeit für Millionen von Nutzern ausgelegt sind liegt der Fokus bei CodeTask auf der direkten einbindung des Lehrplans und der Kontrolle über die studentischen Daten. Die in dieser Arbeit entwickelte Anbindung nutzt dabei mit Docker und Kubernetis Clustern eine Technologie, die auch bei den großen Unternehmen als Standard für die Isolation gilt, passt diese jedoch auf die spezifischen Resourcen der HTWG an.
+
+\section{Containerisierung mit Docker}
+\subsection{Das Docker-Prinzip (Images und Container)}
+\label{sec:container}
+	Um die Ausführung von Nutzercode für das System sicher zu machen, wird Isolation benötigt. Es braucht eine Möglichkeit Code auf einem Server ausführen zu können, ohne dabei das gesamte System durch fehlerhaften oder bösartigen Code zu gefärden. Hier kommt in unserem Fall Docker \cite{docker} in Einsatz.
+	\subsubsection{Docker-Images}
+	Docker-Images sind der Grundstein von Docker. Sie können mithilfe einer sogenannten Dockerfile erstellt werden. \ref{lst:dockerfile_example} zeigt hier solch eine Dockerfile. Als erstes wird ein passendes Image ausgewählt. Ein Image ist in diesem Fall ein eigenes kleines Betriebssystem, welches später in den erstellbaren Containern ausgeführt wird und die Basis für Codeausführung oder andere Aufgaben bildet. Nach dem das Image ausgewählt ist, wird ein Ordner erstellt, der das Quellverzeichnis darstellt. Daraufhin werden alle notwendigen Dateien in dieses Quellverzeichnis kopiert und zum Schluss kann ein Befehl ausgeführt werden, welcher z.B. den Code aus dem Qeullverzeichnis Compiliert und ausführt. In einem Docker-Image befinden sich dann all diese Informationen.
+	Die Dockerfile aus \ref{lst:dockerfile_example} stellt dabei eine leicht veränderte Version der Dockerfile da, mitwelcher das Image für die Entwicklungsumgebnung der Check-API von CodeTask erstellt wird. Das Produktions-Image ist dabei etwas komplexer und optimierter für eine effizientere Nutzung auf Server.
+	\begin{lstlisting}[
+	language=bash,
+	caption={Beispiel eines Dockerfiles für den Compiler-Service}, label={lst:dockerfile_example},
+	float=htbp
+	]
+# Als Basis wird ein Scala/JDK Image genutzt
+FROM sbtscala/scala-sbt:eclipse-temurin-21.0.7_6_1.11.2_3.7.1
+
+# Arbeitsverzeichnis im Container erstellen
+WORKDIR /app
+
+# Notwendige Dateien fuer den Compiler-Service kopieren
+COPY check-api /app
+
+# Befehl zum Starten des persistenten Compiler-Dienstes
+CMD ["sbt", "run"]
+	\end{lstlisting}
+
+	\subsubsection{Docker-Container}
+	Mit Docker-Images können beliebig viele Docker-Container erstellt werden. Dafür kommt der Befehl \texttt{docker run [Docker-Image Name]} in Einsatz. Wird dieser Befehl ausgeführt, nutzt Docker die Informationen aus dem angegebenen Docker-Image um einen Docker-Container zu erstellen. Bei der Erstellung des Containers wird eine neue Schicht erstellt, die auf die Daten des Docker-Images lese-Zugriff hat und so die Informationen nutzen kann ohne das Image zu verändern. In dem Container wird in unserem Beispiel \ref{lst:dockerfile_example} daraufhin die Befehlskette \texttt{sbt run} ausgeführt. Damit wird der Code aus dem Quellverzeichnis des Docker-Image compiliert und ausgeführt. Somit wird unser Programmcode in einem eigenen Docker-Container ausgeführt. Der Docker-Container existiert dabei solange bis der Code beendet wird oder der Docker-Container gelöscht wird. 
+	
+\subsection{Isolation und Sicherheit (Sandboxing)}
+	Ein Docker-Container kann wie ein eigenes System angesehen werden (Sandbox). Sofern nicht explizit eine Kommunikationsmöglichkeit nach außen angegeben wird, kann nichts, das innerhalb des Docker-Containers passiert auf das darunter liegende Host-System zugreifen. Diese Technologie sorgt dafür, das wir die Check-API abgesichert ausführen können ohne das restliche System zu gefährden. Da die Check-API zur Laufzeit Code ausführen muss, kann es passieren, das dieser Code schadhaft ist. So könnte der auszufürhende Code Befehle beinhalten, welche Betriebssystemfunktionen ausführen die über die Anwendung hinausgehen. Dadurch könnten externe Prozesse oder Änderungen von Systemeinstellungen vorgenommen werden. Das wird verhindert, wenn wir den Code in einem Docker-Container ausführen. Hier kann der Code zwar immer noch Schaden anrichten, wie, den Docker-Container selbst zu beenden, in dem die laufende Check-API beendet wird.
+
+\section{Orchestrierung mit Kubernetes}
+Docker-Container können, wie auch in unserem Fall, durch die Nutzung von Kubernetes (K8s) \cite{k8s} noch weiter verbessert werden.
+\subsection{Grundlagen der Container Verwaltung}
+
+\subsection{Hochverfügbarkeit und Self-Healing}
