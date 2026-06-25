@@ -1,6 +1,6 @@
 \chapter{Grundlagen und Technologien}
 
-In diesem Kapitel werden die Grundlagen und die verwendeten Technologien erläutert, die für die Konzeption und Umsetzung der Kompiliereranbindung für CodeTask von Bedeutung sind. Zunächst wird das Konzept von Online-Judge-Systemen im Allgemeinen betrachtet, bevor auf die spezifischen Isolationsmechanismen und Kommunikationsprotokolle eingegangen wird.
+In diesem Kapitel werden die Grundlagen und die verwendeten Technologien erläutert, die für die Konzeption und Umsetzung der Kompiliereranbindung für CodeTask von Bedeutung sind. Zunächst wird das Konzept von Online-Judge-Systemen im Allgemeinen betrachtet, bevor auf die spezifischen Isolationsmechanismen eingegangen wird.
 
 \section{Online-Judge-Systeme}
 Ein Online-Judge-System ist eine Plattform, welche Programmieraufgaben zur Verfügung stellt die von Nutzern gelöst werden können. Dazu wird der Code gegen vordefinierte Testfälle geprüft.
@@ -115,7 +115,19 @@ CMD ["sbt", "run"]
 	Ein Docker-Container kann wie ein eigenes System angesehen werden (Sandbox). Sofern nicht explizit eine Kommunikationsmöglichkeit nach außen angegeben wird, kann nichts, das innerhalb des Docker-Containers passiert auf das darunter liegende Host-System zugreifen. Diese Technologie sorgt dafür, das wir die Check-API abgesichert ausführen können ohne das restliche System zu gefährden. Da die Check-API zur Laufzeit Code ausführen muss, kann es passieren, das dieser Code schadhaft ist. So könnte der auszufürhende Code Befehle beinhalten, welche Betriebssystemfunktionen ausführen die über die Anwendung hinausgehen. Dadurch könnten externe Prozesse oder Änderungen von Systemeinstellungen vorgenommen werden. Das wird verhindert, wenn wir den Code in einem Docker-Container ausführen. Hier kann der Code zwar immer noch Schaden anrichten, wie, den Docker-Container selbst zu beenden, in dem die laufende Check-API beendet wird.
 
 \section{Orchestrierung mit Kubernetes}
-Docker-Container können, wie auch in unserem Fall, durch die Nutzung von Kubernetes (K8s) \cite{k8s} noch weiter verbessert werden.
+Docker-Container können, wie auch in unserem Fall, durch die Nutzung von Kubernetes (K8s) \cite{k8s} noch weiter verbessert werden. Kubernetes sorgt sich um das System. Es hat einen überblick über alle Container die es verwaltet und pflegt diese \cite{k8sOverview}. 
+
 \subsection{Grundlagen der Container Verwaltung}
+In K8s gibt es Cluster, Nodes und Pods. Cluster sind das Gesamtsystem. In ihnen wird alles verwaltet und beherbergt. Angefangen mit Nodes welche in der regelvirtuelle Maschinen sind, die auf einem Physischen System ausgeführt werden. Pods wiederum laufen auf diesen Nodes, wobei mehere Pods in einer Node sein können. Als kleinste Instanz beinhalten die Pods schlussendlich Container. Einen oder auch mehrere Container, je nach System oder Notwendigkeit. \cite{k8sCluster}
 
 \subsection{Hochverfügbarkeit und Self-Healing}
+Das System von K8s ist so aufgebaut, das es Replicas möglich sind. Replicas sind kopien von Nodes oder Pods. Jedes Cluster besitzt einen Verteiler, genauer gesagt einen apiserver, welcher die Anfragen an die Nodes verteilt. Fällt eine Node aus, fällt dies dem Cluster auf. Daraufhin wird automatisch versucht auf den anderen Nodes, sollte es mehrere in dem System geben, die Pods der ausgefallenen Node aufzubauen, um den Ausfall auszugleichen. Fällt ein einzelnder Pod aus, oder antwortet nicht mehr, wird auch dieser ersetzt oder so lange nicht mehr mit Anfragen versorgt, bis er wieder Antwortet. Damit eine Node weiß, das ein Pod ausgefallen ist, wird der Pod in regelmäßigen Intervallen von einem kubelet auf ein Lebenszeichen angefragt. Antworted der Pod innerhalb einer gewissen Zeit weiß die Node das es dem Pod gut geht. Antworted der Pod nicht, ist er entweder überlastet oder abgestürzt. Dieses System sorgt dafür, das es sich selbst heilen kann ohne komplett neu deployed oder manuell neu gestartet werden muss\cite{k8sCluster}. Dieses wissen reicht für diese Bachelorarbeit aus. Genauere Informationen, die das System in CodeTask genau funktioniert und aufgebaut ist finden Sie in der Bachelorarbeit von Konstantin Leon Göke \cite{baKonstantin}.
+
+\section{Kummunikation und Schnittstellen}
+Da jetzt offengelegt wurde, das die Check-API in einem eigenen Container ausgefürht wird, brauchen wir eine Möglichkeit diesen Service auch anzusprechen. Hierfür nutzen wir WSClient \cite{wsClient}. WSClient ermöglicht die Kommunikation mit REST (Representational State Transfer) \cite{rest}.
+\subsection{RESTful Web Services (REST-Architektur)}
+
+
+\subsection{Datenaustausch mit JSON}
+%todo (ganzen Block angucken ob das überhaupt notwendig ist.)
+
