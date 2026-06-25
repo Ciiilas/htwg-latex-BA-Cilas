@@ -1,1 +1,62 @@
-\chapter{Konzeptararchitektur}
+\chapter{Konzept und Architektur}
+\label{chap:concept&architecture}
+Dieses Kapitel erläutert den konzeptionellen Aufbau der erweiterten Check-API. Dafür werden die Anforderungen aus Kapitel \ref{chap:requirements} in die Zielarchitektur, den Ablauf einer Anfrage und in die Sicherheitsmaßnamen übersetzt.
+
+\section{Überblick über die Zielarchitektur}
+Die Zielarchitektur baut dabei auf der bereits bestehenden isolierten Check-API, sowie den bestehenden Systemen, wie der Haupt-API, Frontend und Datenbank auf.
+Die Haupt-API ist für die Verwaltung aller Anfragen, sowie der Zusammensetzung notwendiger Daten zuständig. Für die Prüfung des Nutzercodes ruft sie die Check-API auf und übergibt die notwendigen Informationen, wie die öffentlichen Tests, Nutzercode und die neu eingeplanten verstecken Tests.
+
+Die Check-API übernimmt, separiert vom restlichen System, den Prüfdienst, die Verarbeitung der Einreichung und liefert ein Ergebnis an die Haupt-API zurück. Die Weiterentwicklung im Rahmen dieser Bachelorarbeit setzt primär hier an und erweitert das System um eine sichere Hidden-Test-Verarbeitung, einer Überprüfung auf bösartige Codeabschnitte und eine aussagekräftige Ergebnisrückgabe.
+  \begin{figure}[htbp]
+	\centering
+	\begin{tikzpicture}[
+		node distance=2.2cm,
+		component/.style={
+			draw,
+			rectangle,
+			rounded corners,
+			minimum width=3.4cm,
+			minimum height=1.1cm,
+			align=center
+		},
+		data/.style={
+			draw,
+			rectangle,
+			minimum width=2.8cm,
+			minimum height=0.8cm,
+			align=center
+		},
+		arrow/.style={
+			-{Latex},
+			thick
+		}
+		]
+		\node[component] (mainapi) {Haupt-API};
+		\node[component, right=3.5cm of mainapi] (checkapi) {Check-API\\Prüfdienst};
+		\node[component, below=2.2cm of checkapi] (execution) {Kompilierung und Ausführung};
+		
+		\node[data, above=1.5cm of checkapi] (input) {Nutzercode\\öffentliche Tests\\Hidden Tests};
+		
+		\draw[arrow] (mainapi) -- node[above] {Prüfanfrage} (checkapi);
+		\draw[arrow] (checkapi) -- node[below] {Ergebnis} (mainapi);
+		
+		\draw[arrow] (input) -- (checkapi);
+		\draw[arrow] (checkapi) -- node[right] {zusammengeführter Code} (execution);
+		\draw[arrow] (execution) -- node[right] {Ausführungsergebnis} (checkapi);
+	\end{tikzpicture}
+	\caption{Überblick über die Zielarchitektur der erweiterten Check-API}
+	\label{fig:zielarchitektur}
+\end{figure}
+\section{Verarbeitungsablauf einer Einreichung}
+
+
+\section{Konzept zur Hidden-Test-Integration}
+
+
+\section{Konzept zur isolierten Codeausfürhung}
+
+
+\section{Konzept zur Ergebnis- und Fehlerbehandlung}
+
+
+\section{Sicherheutsbetachtung}
