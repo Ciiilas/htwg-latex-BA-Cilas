@@ -51,7 +51,7 @@
 \RequirePackage{rotating}
 \RequirePackage[table]{xcolor}
 \RequirePackage{longtable}
-
+\usepackage{svg}
 \lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
 \lstset{framextopmargin=50pt}
 
@@ -79,6 +79,7 @@
 \fi
 \RequirePackage{metalogo}
 \RequirePackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
 \RequirePackage[noindentafter]{titlesec}
 \RequirePackage{titletoc}
 
