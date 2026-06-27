@@ -52,8 +52,19 @@
 \RequirePackage[table]{xcolor}
 \RequirePackage{longtable}
 \usepackage{svg}
-\lstset{basicstyle=\footnotesize\ttfamily,breaklines=true}
-\lstset{framextopmargin=50pt}
+\lstset{
+    basicstyle=\footnotesize\ttfamily,
+    breaklines=true,
+    showstringspaces=false,
+    literate=
+        {Ä}{{\"A}}1
+        {Ö}{{\"O}}1
+        {Ü}{{\"U}}1
+        {ä}{{\"a}}1
+        {ö}{{\"o}}1
+        {ü}{{\"u}}1
+        {ß}{{\ss}}1
+}
 
 %% 'background' includes 'graphicx' as well
 \RequirePackage[firstpage=true]{background}
@@ -82,7 +93,8 @@
 \usetikzlibrary{arrows.meta,positioning}
 \RequirePackage[noindentafter]{titlesec}
 \RequirePackage{titletoc}
-
+\RequirePackage[acronym,nomain,nonumberlist]{glossaries}
+\makeglossaries
 \RequirePackage{xkeyval}
 
 %% BIB
