@@ -4,9 +4,9 @@ In diesem Kapitel wird auf das bereits bestehende Gesamtsystem und explizit auf 
 
 \section{Analyse des Altsysems und Problemstellung}
 \label{section:analyseDesAltsystemsUndProblemstellung}
-Das Projekt CodeTask wird schon seit geraumer Zeit an der HTWG von Studenten entwickelt, ob für das Teamprojekt im sechten Semester, für Bachelorarbeiten oder sogar Masterarbeiten an der Hochschule in Konstanz. Zu beginn meiner Bachelorarbeit ist das Projekt schon sehr weit fortgeschritten, hat aber in vielen Bereichen noch Verbesserungspotentioal. So auch der Service Check-API.
+Das Projekt CodeTask wird schon seit geraumer Zeit an der HTWG von Studenten entwickelt, ob für das Teamprojekt im sechsten Semester, für Bachelorarbeiten oder sogar Masterarbeiten an der Hochschule in Konstanz. Zu Beginn meiner Bachelorarbeit ist das Projekt schon sehr weit fortgeschritten, hat aber in vielen Bereichen noch Verbesserungspotenzial. So auch der Service Check-API.
 
-Der Service Check-API hat dabei besonders kritische Schwachstellen. Zwar wird der Service schon in einem Docker-Container ausgeführt, um damit die Isolation zum restlichen System zu gewährleisten, allerdings gibt es keinerlei Sicherheiten, die dafür sorgen, das der Service vor einer Abschaltung durch die interne Codeausführung geschützt ist. Ein weiteres Problem liegt darin, wie Code auf Maschinen ausgeführt wird. Eine Unendliche Schleife in einem Code kann die Verarbeitung innerhalb der Check-API blockieren und dadurch weitere Prüfungen verzögern oder verhindern. Das kann schon in allgemeinen Applikationen zu schwerwiegenden Problemen führen. Dies kann allerdings durch ausgibige Tests leicht gefunden und frühzeitig behoben werden. In unserem Fall, wissen wir allerdings nicht, ob der Code vom Nutzer sorgfältig vom Nutzer geprüft wurde und so können sich schnell unendliche Schleifen einschleichen. Zur laufzeit kann man schlecht prüfen ob es sich in dem Code um eine unendliche Schleife handelt. Ein weiteres Problem liegt in der Art wie die Aufgaben gestellt sind. Der Nutzer bekommt einen Code wie in Listing~\ref{lst:codetaskAufgabePublicTests} gezeigt. Dabei sieht der Student den öffentlichen Test, was dafür sorgt das der Student die Aufgabe geschickt umgehen kann und das eigentliche Ziel der Aufgabe nicht erfüllt. Schreibt der Student z.~B. \texttt{val greeting = "hello world"} wird der Test \texttt{greeting should be("hello world")} als korrekt validiert. Der Student hätte allerdings Strink-Konkatenation nutzen sollen, bei der der vorher definierte String \texttt{c} mit dem String \texttt{"\textvisiblespace world"} zu einem String verbunden werden. Das gleiche kann auch mit dem Wert \texttt{val b} gemacht werden, in dem der Student \texttt{val b = 6} schreibt und nicht den eigentlich vorgegebenen mathematischen Term nutzt.
+Der Service Check-API hat dabei besonders kritische Schwachstellen. Zwar wird der Service schon in einem Docker-Container ausgeführt, um somit die Isolation zum restlichen System zu gewährleisten, allerdings gibt es keinerlei Sicherheiten, die dafür sorgen, dass der Service vor einer Abschaltung durch die interne Codeausführung geschützt ist. Ein weiteres Problem liegt darin, wie Code auf Maschinen ausgeführt wird. Eine endlose Schleife in einem Code kann die Verarbeitung innerhalb der Check-API blockieren und dadurch weitere Prüfungen verzögern oder verhindern. Das kann schon in allgemeinen Applikationen zu schwerwiegenden Problemen führen. Dies kann allerdings durch ausgiebige Tests leicht gefunden und frühzeitig behoben werden. In unserem Fall wissen wir allerdings nicht, ob der Code vom Nutzer sorgfältig geprüft wurde, und so können sich schnell unendliche Schleifen einschleichen. Zur Laufzeit kann man schlecht prüfen, ob es sich in dem Code um eine unendliche Schleife handelt. Ein weiteres Problem liegt in der Art, wie die Aufgaben gestellt sind. Der Nutzer bekommt einen Code, wie in Listing~\ref{lst:codetaskAufgabePublicTests} gezeigt. Dabei sieht der Student den öffentlichen Test, was dafür sorgt, dass der Student die Aufgabe geschickt umgehen kann und das eigentliche Ziel der Aufgabe nicht erfüllt. Schreibt der Student z.~B. \texttt{val greeting = "hello world"}, wird der Test \texttt{greeting should be("hello world")} als korrekt validiert. Der Student hätte allerdings String-Konkatenation nutzen sollen, bei der der vorher definierte String \texttt{c} mit dem String \texttt{"\textvisiblespace world"} zu einem String verbunden werden. Das Gleiche kann auch mit dem Wert \texttt{val b} gemacht werden, indem der Student \texttt{val b = 6} schreibt und nicht den eigentlich vorgegebenen mathematischen Term nutzt.
 	\begin{lstlisting}[
 	language=Scala,
 	showstringspaces=false,
@@ -25,32 +25,32 @@ c should be("hello")
 greeting should be("hello world")
 	\end{lstlisting}
 
-Desweiteren bekommt der Nutzer ein sehr schwaches, kompaktes Feedback durch den Service. Ist der Code des Nutzers korrekt, gibt der Check-API Service einen Statuscode von \texttt{200 OK} aus. In einem System dieser Art sagt das aus, dass der Code korrekt geschrieben war und die Ergebnisse mit denen der Tests übereinstimmen. Ist der Code fehlerhaft, wird der Nutzer mit einem \texttt{400 Bad Request} informiert, ohne eine weitere Nachricht. Dies ist unabhängig der Herkunft des Fehlers, heist, ob es ein syntaktischer Fehler, also ein Fehler ist, der auf die Rechtschreibung des Codes zurückzuführen ist oder ein falscher Wert ist, der dafür sorgt das einer der Tests fehlschlägt, ist dabei irrelevant. Ein \texttt{400 Bad Request} Antwort-Code wird in der Regel für fehlerhafte Anfragen genutzt, kann dabei allerdings zusätzlich mit einer Nachricht versehen werden. Diese Nachricht enthält dabei typischerweise eine Begründung, warum die Anfrage Fehlerhaft war oder zumindest eine Möglichkeit, wenn das System selbst nicht ganz bestimmen kann, warum es zu einem Fehler gekommen ist.
+Des Weiteren bekommt der Nutzer ein sehr schwaches kompaktes Feedback durch den Service. Ist der Code des Nutzers korrekt, gibt der Check-API Service einen Statuscode von \texttt{200 OK} aus. In einem System dieser Art sagt das aus, dass der Code korrekt geschrieben war und die Ergebnisse mit denen der Tests übereinstimmen. Ist der Code fehlerhaft, wird der Nutzer mit einem \texttt{400 Bad Request} informiert, ohne eine weitere Nachricht. Dies ist unabhängig der Herkunft des Fehlers, heißt, ob es ein syntaktischer Fehler, also ein Fehler ist, der auf die Rechtschreibung des Codes zurückzuführen ist, oder ein falscher Wert ist, der dafür sorgt, dass einer der Tests fehlschlägt, ist dabei irrelevant. Ein \texttt{400 Bad Request} Antwort-Code wird in der Regel für fehlerhafte Anfragen genutzt, kann dabei allerdings zusätzlich mit einer Nachricht versehen werden. Diese Nachricht enthält dabei typischerweise eine Begründung, warum die Anfrage fehlerhaft war, oder zumindest eine Möglichkeit, wenn das System selbst nicht ganz bestimmen kann, warum es zu einem Fehler gekommen ist.
 
 
 \section{Zielsetung und Systemgrenzen}
-Das Ziel dieser Arbeit liegt darin, das System zu verbessern. Darunter zählt eine erhöhte Sicherheit für das Gesamtsystem während der Codeausführung zu schaffen, das System soll eine Möglichkeit anbieten, die dafür sorgt das der Code des Nutzers tiefergehend geprüft werden kann, sodass Lösungen über die öffentlichen Testfälle hinaus geprüft werden können. Der Service soll robuster gegen problematischen Nutzercode sein, sodass ein ausfallen oder abstürzen des Services vermieden wird. Deweiteren soll der Service klarere Fehlermeldungen ausgeben, sollte mit dem Code des Nutzers etwas nicht stimmten. Als letztes soll der Service auf Performance geprüft werden um einschätzen zu können, wo die grenzen des Services liegen und wie das System skaliert werden muss, um eine Nutzung an der Hochschule effizient und zuverlässig ermöglichen zu können. Diese Bachelorarbeit ist nicht dafür gedacht die Inhalte der Aufgaben zu überarbeiten und zu erweitern. Diese Bachelorarbeit soll lediglich die Infrastruktur dafür erarbeiten.
+Das Ziel dieser Arbeit liegt darin, das System zu verbessern. Darunter zählt, eine erhöhte Sicherheit für das Gesamtsystem während der Codeausführung zu schaffen. Das System soll eine Möglichkeit anbieten, die dafür sorgt, dass der Code des Nutzers tiefergehend geprüft werden kann, sodass Lösungen über die öffentlichen Testfälle hinaus geprüft werden können. Der Service soll robuster gegen problematischen Nutzercode sein, sodass ein Ausfallen oder Abstürzen des Services vermieden wird. Des Weiteren soll der Service klarere Fehlermeldungen ausgeben, sollte mit dem Code des Nutzers etwas nicht stimmen. Als Letztes soll der Service auf Performance geprüft werden, um einschätzen zu können, wo die Grenzen des Services liegen und wie das System skaliert werden muss, um eine Nutzung an der Hochschule effizient und zuverlässig ermöglichen zu können. Diese Bachelorarbeit ist nicht dafür gedacht, die Inhalte der Aufgaben zu überarbeiten und zu erweitern. Diese Bachelorarbeit soll lediglich die Infrastruktur dafür erarbeiten.
 
 
 \section{Funktionale Anforderungen}
 Aus der zuvor beschriebenen Problemstellung und Zielsetzung leiten sich folgende funktionale Anforderungen zur Weiterentwicklung der Check-API ab.
 
 \begin{description}
-	\item \textbf{FA1: Hidden-Test Unterstützung}
+	\item \textbf{FA1: Unterstützung versteckter Tests}
 	
-	Die Check-API muss versteckte Tests unterstützen. Dafür muss das System diese vor der Compilierung mit den Öffentlichen und dem Nutzer Code zusammenbauen, sodass der gesamte Code in einem durch den Compiler geprüft werden kann.
+	Die Check-API muss versteckte Tests unterstützen. Dafür muss das System diese vor der Kompilierung mit den öffentlichen Tests und dem Nutzercode zusammenführen, sodass der gesamte Code in einem durch den Kompiler geprüft werden kann.
 		
 	\item \textbf{FA2: Differenzierte Ergebnisauswertung}
 	
-	Die Check-API soll zu den bestehenden korrekten und fehlerhaft Aussagen zusätlich Informationen liefern, worin das Problem bei einem fehlerhaften Ergebnis liegt. Dabei soll unterschieden werden, ob es sich um einen falsch geschriebenen Code, einen angeschlagenen Test oder um eine Zeitüberschreitung handelt.
+	Die Check-API soll zu den bestehenden korrekten und fehlerhaften Aussagen zusätzlich Informationen liefern, worin das Problem bei einem fehlerhaften Ergebnis liegt. Dabei soll unterschieden werden, ob es sich um einen falsch geschriebenen Code, einen fehlgeschlagenen Test oder um eine Zeitüberschreitung handelt.
 	
 	\item \textbf{FA3: Strukturierte Rückmeldung}
 	
-	Die Aussagen zu fehlerhaften Anfragen soll strukturiert in einem einheitlichen System über die vorhandene Schnittstelle geliefert werden.
+	Die Aussagen zu fehlerhaften Anfragen sollen strukturiert in einem einheitlichen System über die vorhandene Schnittstelle geliefert werden.
 
-	\item \textbf{FA4: Schutz von Hidden Tests}
+	\item \textbf{FA4: Schutz von versteckten Tests}
 	
-	Es muss sichergestellt werden, das zu keinem Zeitpunkt ein Nutzer die Versteckten Tests sehen oder auslesen kann. Dazu gehört ebenfalls das Ausgaben des Compilers für die Versteckten Tests nicht ohne Weiterverarbeitung an den Nutzer gelangen dürfen.
+	Es muss sichergestellt werden, dass zu keinem Zeitpunkt ein Nutzer die versteckten Tests sehen oder auslesen kann. Dazu gehört ebenfalls, dass Ausgaben des Kompilers für die versteckten Tests nicht ohne Weiterverarbeitung an den Nutzer gelangen dürfen.
 		
 	\item \textbf{FA5: Begrenzung der Ausführungszeit}
 	
@@ -58,27 +58,28 @@ Aus der zuvor beschriebenen Problemstellung und Zielsetzung leiten sich folgende
 	
 	\item \textbf{FA6: Behandlung kritischer Einreichungen}
 	
-	Fehlerhafter oder Bösartiger Nutzer Code darf die Ausführung nachfolgender Anfragen nicht Behindern.
+	Fehlerhafter oder bösartiger Nutzercode darf die Ausführung nachfolgender Anfragen nicht behindern.
 	
 \end{description}
 
 \section{Nicht-funktionale Anforderungen}
-Weiterhin muss die das System folgende Anforderungen an Sicherheit, 	Zuverlässigkeit und Leistungsfähigkeit erfüllen.
+Weiterhin muss das System folgende Anforderungen an Sicherheit, Zuverlässigkeit und Leistungsfähigkeit erfüllen.
 \begin{description}
-	
+
 	\item \textbf{NFA1: Isolation der Codeausführung}
-	Die Ausführung von Nutzercode darf nicht die restlichen Systeme gefährden oder Kompromitieren. Der Code darf keinen Zugriff auf nicht belötigte Dateien, Systemressourcen oder interne Dienste erhalten.
-	
+
+	Die Ausführung von Nutzercode darf nicht die restlichen Systeme gefährden oder kompromittieren. Der Code darf keinen Zugriff auf nicht benötigte Dateien, Systemressourcen oder interne Dienste erhalten.
+
 	\item \textbf{NFA2: Vertraulichkeit interner Informationen}
-	Hidden Tests, Dateipfade, Stacktraces oder weitere interne Informationen dürfen nicht ungefiltert an den Nutzer ausgegeben werden.
-	
+
+	Versteckte Tests, Dateipfade, Stacktraces oder weitere interne Informationen dürfen nicht ungefiltert an den Nutzer ausgegeben werden.
+
 	\item \textbf{NFA3: Robustheit}
+
 	Die Verfügbarkeit der Check-API darf nicht durch absichtlich problematische oder nicht terminierende Einreichungen beeinträchtigt werden.
-	
+
 	\item \textbf{NFA4: Leistungsfähigketi}
-	
-	Der Service Check-API muss auch unter Last, verursacht durch mehrere simultanen Anfragen, innerhalb akzeptabler Antwortzeiten reagieren. Die genauen Grenzen werden in dem Kapitel \ref{chap:evaluation}  Evaluation  untersucht.
-	
+
+	Der Service Check-API muss auch unter Last, verursacht durch mehrere simultane Anfragen, innerhalb akzeptabler Antwortzeiten reagieren. Die genauen Grenzen werden in dem Kapitel~\ref{chap:evaluation} Evaluation untersucht.
+
 \end{description}
-
-
