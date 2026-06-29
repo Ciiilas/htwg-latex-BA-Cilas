@@ -1,5 +1,8 @@
-\chapter*{Kurzfassung}
-\setheader{Kurzfassung}
+\chapter*{Abstract}
+\setheader{Abstract}
 
-Abstract\ldots
+Diese Bachelorarbeit beschäftigt sich mit der Weiterentwicklung der Check-API und das damit verbundene System der Programmierlernplattform CodeTask. CodeTask ist eine an der HWTG Konstanz entwickelte Website zum bearbeiten, lösen und lernen von Programmieraufgaben in der Programmiersprache Scala. CodeTask ermöglicht dabei direkte Ausführung und Fehlerbehandlung von Code. Für diese Aufgabe kommt der Isolierte Service Check-API in einsatz, welche darauf ausgelegt ist Code in einem aktiven System ausführen zu können. Zu Beginn der Arbeit verfügte die Check-API bereit über die Fähigkeit Code zusammen mit öffenltichen Tests ausführen und evaluieren zu können. Die Check-API verfügte zu diesem Zeitpunkt allerdings nur über eine eingeschränkte Rückmeldung, besaß keine Unterstützung für versteckte Tests, war ungeschützt gegenüber bösartigem Code und konnte durch eine einfache unendliche Schleife zum Stillstand kommen
 
+Ziel der Arbeit war es, die Check-API robuster, aussagekräftiger und sicherer zu machen. Dafür wurde das System um die Möglichkeit erweitert versteckte Tests zu nutzen, sodass Nutzer die Lösung einer Aufgabe nicht ermogeln können. Zusätzlich wurde die Check-API mit einer sicherheitsprüfung von Code auf unsichere Befehle ausgestattet, sodass bösartiger Code die Check-API nicht auser betrieb nehmen können. Zudem wurden Fehlermeldungen systematisch ausgewertet und aufbereitet um eine verbesserte Fehlersuche für den Nutzer zu ermöglichen.
+
+Die Evaluation zeigt, dass versteckte Tests erfolgreich integriert und jederzeit vor dem Nutzer verborgen bleiben. Des weiteren werden Compilierungsfehler, fehlgeschlagene öffentliche, fehlgeschlagene versteckte Tests, Zeitüberschreitungen und Sicherheitsverstöße korrekt erkannt, verarbeitet und strukturiert an den Nutzer weitergegeben. Die Performance-Messungen legen eine klare Verbesserung der Leistung offen, zeigen jedoch deutlich, dass die Ausführung von Nutzercode rechenintensiv bleibt und für hohe Last geeignete Skalierungsmaßnahmen erfoderlich sind.
