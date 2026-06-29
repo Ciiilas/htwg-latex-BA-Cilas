@@ -1,1 +1,24 @@
 \chapter{Fazit}
+
+\section{Zusammenfassung}
+Ziel dieser Bachelorarbeit war die Weiterentwicklung der bestehenden Check-API und die dafür notwendige Anpassung der umliegenden Systemen. Besonders relevant dabei war die Infrastruktur zur Unterstützung von versteckten Tests, sodass diese sicher ausgeführt werden können, ohne dabei von dem Nutzer einsehbar zu sein. Des weiteren waren eine robustere Ausführung von Nutzercode, eine bessere Fehlerbehandlung und Fehlermitteilung an den Nutzer und eine Verbesserung der Leistungsfähigkeit von großer Wichtigkeit.
+
+Dafür wurde als erstes die Verarbeitung der Aufgabenstellung erweitert, sodass versteckte Tests korrekt eingelesen und verarbeitet werden können. So kann der Parser nun sowohl öffentliche als auch versteckte Tests erkennen und getrennt von einander in der Datenbank ablegen. So können im Programmablauf die Tests unterschiedlich gehandhabt werden, sodass versteckte Tests nie von dem Nutzer eingesehen werden können. Ebenfalls wurden die Haupt-API und die Check-API so angepasst, das diese versteckte Tests übermitteln und entgegen nehmen können.
+
+Die Check-API wurde des weiteren so erweitert, das nun versteckte Tests zusammen mit öffentliche Tests und Nutzercode zu einer prüfbaren Einheit vereint werden. Zusätzlich verfügt die Check-API nun über eine erweiterte Fehlerbehandlung, welche unterschiedliche Szenarien unabhängig voneinander verarbeiten kann, um so dem Nutzer eine strukturierte, korrekte, sichere und aussage kräftige Fehlermeldung zu übermitteln.
+
+\section{Bewertung der Ergebnisse}
+Wie die Evaluation in Kapitel \ref{chap:evaluation} aufweist wurden die zentralen Anforderungen der Arbeit erfüllt. Versteckte Tests werden erfolgreich verarbeitet werden, ohne dabei die Inhalte der versteckten Tests an den Nutzer auszugeben. Fehlerfälle wie Compilierungsfehler, fehlgeschlagene öffentliche Tests, fehlgeschlagene versteckte Tests, Zeitüberschreitungen, Sicherheitsfehler und Laufzeitfehler werden unterschieden und in einem einheitlichen Format zurück gegeben.
+
+Ebenso konnte die Robustheit erhöht werden. Zum einen wird der eingereichte Code vor der ausführung auf kritische Befehle untersucht und zum anderen wird durch, die Auslagerung der Ausführung in einen Unterprozess, der Hauptprozess stärker vor bösartiger Codeausführung geschützt.
+
+Die Performance-Evaluation \ref{sec:performance} zeigt ebenfalls eine Verbesserung gegenüber dem Systemzustand vor Beginn dieser Bachelorarbeit. Gleichzeitig wird deutlich, das die Compilierung und Ausführung trotz Optimierung rechenintensiv bleibt und besonders unter starker paralleler Last für hohe Antwortzeiten sorgt. Für die Nutzung während einer Klausur sollte das System dennoch stabil bleiben, sollte allerdings für eine geringere Ausfallwahrscheinlichkeit dennoch mit bessere Hardware bzw. Ressourcen ausgestattet werden.
+
+\section{Ausblick}
+Auf dieser Arbeit können weitere Verbesserungen umgesetzt werden. Zum einen kann zusätzlich zur Codeausführung ebenfalls die Compilierung auf Unterprozesse ausgelagert werden, da auch die Compilierung extrem rechenintensiv ist und so einen eigenen Kern nutzen kann, ohne von der restlichen Verarbeitung der Check-API gedrosselt zu werden. Des weiteren können die Performance Evaluationen erweitert werden, durch unterschiedliche Aufgaben, variierender Nutzerzahlen und klarer Information über die verwendete Hardware. Besonders aussagekräftig wäre ein möglichst realistischer Klausurversuch, mit dem gemessen werden kann, wie oft der Service wirklich angefragt wird und wie in solch einem kritischen Szenario die Check-API tatsächlich perforiert.
+
+Zusätzlich sollte die Sicherheitsprüfung weiter verbessert werden. Zwar werden gewisse verbotene Schlüsselwörter gefiltert, dennoch kann sowohl diese Liste erweitert werden als auch die Erweiterung durch weitere Sicherheitskonzepte. Darunter fallen eine stärkere Isolation, Begrenzung von Ressourcen, wie CPU, Speicher und Datenzugriff. Zusätzlich wäre eine Untersuchung eines Sicherheitsspezialisten hilfreich um weitere Fehler und schwächen in dem System aufzudecken um auch diese beheben zu können und das System damit nochmals sicherer machen zu können.
+
+Auch die Rückmeldungen an Nutzer können weiter ausgebaut werden. Durch Nutzerfeedback kann festgestellt werden, wie eine gewisse Antwort noch präziser Formuliert werden kann um dem Nutzer genauer das Problem aufzuzeigen ohne dabei dem Nutzer die korrekte Antwort offenzulegen.
+
+Insgesamt bildet die Arbeit ein gutes Fundament dafür, CodeTask-Aufgaben sicherer, aussagekräftiger und schneller zu prüfen. Die Check-API wurde von einem einfachen Prüfdienst zu einem strukturierten und robusterem Bestandteil der Lernplattform CodeTask weiterentwickelt. 
